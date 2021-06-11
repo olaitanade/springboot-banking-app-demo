@@ -1,5 +1,6 @@
 package com.example.bankapplication.controller;
 
+import com.example.bankapplication.model.request.AccountCreation;
 import com.example.bankapplication.model.request.Credential;
 import com.example.bankapplication.model.request.Deposit;
 import com.example.bankapplication.model.request.Withdraw;
@@ -37,5 +38,10 @@ public class BankApplicationRestController {
     @RequestMapping(value = "/withdrawal", method = RequestMethod.POST)
     public ResponseEntity<?> withdrawal(@RequestBody Withdraw withdraw) {
         return bankApplicationService.withdraw(withdraw);
+    }
+
+    @RequestMapping(value = "/create_account", method = RequestMethod.POST)
+    public ResponseEntity<?> createAccount(@RequestBody AccountCreation accountCreation) {
+        return bankApplicationService.createAccount(accountCreation);
     }
 }
