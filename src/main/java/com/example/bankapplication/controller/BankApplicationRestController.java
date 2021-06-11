@@ -21,4 +21,9 @@ public class BankApplicationRestController {
     public ResponseEntity<?> accountInfo(@RequestBody Credential credential) {
         return bankApplicationService.getAccountInfo(credential);
     }
+
+    @RequestMapping(value = "/account_statement", method = RequestMethod.POST)
+    public ResponseEntity<?> accountStatement(@RequestBody Credential credential) {
+        return bankApplicationService.getAccountStatement(credential);
+    }
 }
