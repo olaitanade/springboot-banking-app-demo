@@ -2,6 +2,7 @@ package com.example.bankapplication.controller;
 
 import com.example.bankapplication.model.request.Credential;
 import com.example.bankapplication.model.request.Deposit;
+import com.example.bankapplication.model.request.Withdraw;
 import com.example.bankapplication.service.IBankApplicationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -31,5 +32,10 @@ public class BankApplicationRestController {
     @RequestMapping(value = "/deposit", method = RequestMethod.POST)
     public ResponseEntity<?> deposit(@RequestBody Deposit deposit) {
         return bankApplicationService.deposit(deposit);
+    }
+
+    @RequestMapping(value = "/withdrawal", method = RequestMethod.POST)
+    public ResponseEntity<?> withdrawal(@RequestBody Withdraw withdraw) {
+        return bankApplicationService.withdraw(withdraw);
     }
 }
