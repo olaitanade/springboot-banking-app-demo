@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/api/v1/bank")
 @Validated
@@ -21,27 +23,27 @@ public class BankApplicationRestController {
     private IBankApplicationService bankApplicationService;
 
     @RequestMapping(value = "/account_info", method = RequestMethod.POST)
-    public ResponseEntity<?> accountInfo(@RequestBody Credential credential) {
+    public ResponseEntity<?> accountInfo(@Valid @RequestBody Credential credential) {
         return bankApplicationService.getAccountInfo(credential);
     }
 
     @RequestMapping(value = "/account_statement", method = RequestMethod.POST)
-    public ResponseEntity<?> accountStatement(@RequestBody Credential credential) {
+    public ResponseEntity<?> accountStatement(@Valid @RequestBody Credential credential) {
         return bankApplicationService.getAccountStatement(credential);
     }
 
     @RequestMapping(value = "/deposit", method = RequestMethod.POST)
-    public ResponseEntity<?> deposit(@RequestBody Deposit deposit) {
+    public ResponseEntity<?> deposit(@Valid @RequestBody Deposit deposit) {
         return bankApplicationService.deposit(deposit);
     }
 
     @RequestMapping(value = "/withdrawal", method = RequestMethod.POST)
-    public ResponseEntity<?> withdrawal(@RequestBody Withdraw withdraw) {
+    public ResponseEntity<?> withdrawal(@Valid @RequestBody Withdraw withdraw) {
         return bankApplicationService.withdraw(withdraw);
     }
 
     @RequestMapping(value = "/create_account", method = RequestMethod.POST)
-    public ResponseEntity<?> createAccount(@RequestBody AccountCreation accountCreation) {
+    public ResponseEntity<?> createAccount(@Valid @RequestBody AccountCreation accountCreation) {
         return bankApplicationService.createAccount(accountCreation);
     }
 }
