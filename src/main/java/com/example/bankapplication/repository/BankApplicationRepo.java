@@ -103,14 +103,16 @@ public class BankApplicationRepo {
 
     public boolean updateAccount(Account account) {
         int index = 0;
+        boolean found = false;
         for (int i = 0; i < accounts.size(); i++) {
             if (accounts.get(i).getAccountNumber().equals(account.getAccountNumber())) {
                 index = i;
+                found = true;
                 break;
             }
         }
         accounts.set(index,account);
-        return true;
+        return found;
     }
 
     public String insertAccount(Account account){
