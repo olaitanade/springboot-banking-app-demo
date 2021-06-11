@@ -20,8 +20,12 @@ public class BankApplicationRepo {
     private List<Account> accounts = new ArrayList<Account>();
     private List<Transaction> transactions = new ArrayList<Transaction>();
 
-    @Autowired
     private PasswordUtil passwordUtil;
+
+    @Autowired
+    public BankApplicationRepo(PasswordUtil passwordUtil){
+        this.passwordUtil = passwordUtil;
+    }
 
     public void initialize(){
         Account customer1 = new Account();
