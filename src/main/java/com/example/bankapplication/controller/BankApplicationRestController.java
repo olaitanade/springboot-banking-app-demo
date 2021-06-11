@@ -19,8 +19,13 @@ import javax.validation.Valid;
 @RequestMapping("/api/v1/bank")
 @Validated
 public class BankApplicationRestController {
-    @Autowired
+
     private IBankApplicationService bankApplicationService;
+
+    @Autowired
+    public BankApplicationRestController(IBankApplicationService bankApplicationService){
+        this.bankApplicationService = bankApplicationService;
+    }
 
     @RequestMapping(value = "/account_info", method = RequestMethod.POST)
     public ResponseEntity<?> accountInfo(@Valid @RequestBody Credential credential) {

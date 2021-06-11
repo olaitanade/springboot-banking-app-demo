@@ -26,12 +26,18 @@ import java.util.UUID;
 @Service
 public class BankApplicationService implements IBankApplicationService {
 
-    @Autowired
     private BankApplicationRepo bankApplicationRepo;
-    @Autowired
+
     private PasswordUtil passwordUtil;
-    @Autowired
+
     private BankApplicationUtil bankApplicationUtil;
+
+    @Autowired
+    public BankApplicationService(BankApplicationRepo bankApplicationRepo,PasswordUtil passwordUtil,BankApplicationUtil bankApplicationUtil){
+        this.bankApplicationRepo = bankApplicationRepo;
+        this.passwordUtil = passwordUtil;
+        this.bankApplicationUtil = bankApplicationUtil;
+    }
 
     @Override
     public void initializeData() {

@@ -20,8 +20,12 @@ public class BankApplicationRepo {
     private List<Account> accounts = new ArrayList<Account>();
     private List<Transaction> transactions = new ArrayList<Transaction>();
 
-    @Autowired
     private PasswordUtil passwordUtil;
+
+    @Autowired
+    public BankApplicationRepo(PasswordUtil passwordUtil){
+        this.passwordUtil = passwordUtil;
+    }
 
     public void initialize(){
         Account customer1 = new Account();
@@ -99,14 +103,16 @@ public class BankApplicationRepo {
 
     public boolean updateAccount(Account account) {
         int index = 0;
+        boolean found = false;
         for (int i = 0; i < accounts.size(); i++) {
             if (accounts.get(i).getAccountNumber().equals(account.getAccountNumber())) {
                 index = i;
+                found = true;
                 break;
             }
         }
         accounts.set(index,account);
-        return true;
+        return found;
     }
 
     public String insertAccount(Account account){
