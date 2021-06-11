@@ -1,7 +1,11 @@
 package com.example.bankapplication.model.request;
 
+import javax.validation.constraints.NotBlank;
+
 public class Credential {
+    @NotBlank(message = "accountNumber is mandatory")
     private String accountNumber;
+    @NotBlank(message = "accountPassword is mandatory")
     private String accountPassword;
 
     public String getAccountNumber() {

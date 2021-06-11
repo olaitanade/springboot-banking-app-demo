@@ -67,61 +67,53 @@ public class BankApplicationService implements IBankApplicationService {
 
     @Override
     public ResponseEntity<?> deposit(@NotNull Deposit deposit) {
-        if(deposit.getAmount()>1000000.0 || deposit.getAmount()<1.0){
-            return new ResponseEntity<>(new DefaultResponse(400,false,"Account password incorrect"), HttpStatus.resolve(400));
+        Account account = bankApplicationRepo.getAccountByNumber(deposit.getAccountNumber());
+        DefaultResponse defaultResponse = bankApplicationUtil.authorize(account);
+
+        if(!defaultResponse.isSuccess()){
+            return new ResponseEntity<>(defaultResponse, HttpStatus.resolve(defaultResponse.getResponseCode()));
         }else{
-            Account account = bankApplicationRepo.getAccountByNumber(deposit.getAccountNumber());
-            DefaultResponse defaultResponse = bankApplicationUtil.authorize(account);
+            Transaction transaction = new Transaction();
+            transaction.setTransactionType(TransactionType.DEPOSIT);
+            transaction.setTransactionDate(new Date());
+            transaction.setAccountBalance(account.getBalance()+deposit.getAmount());
+            transaction.setAmount(deposit.getAmount());
+            transaction.setAccountNumber(account.getAccountNumber());
+            transaction.setNarration("Deposit");
+            transaction.setTransactionId(UUID.randomUUID().toString());
+            bankApplicationRepo.insertTransaction(transaction);
 
-            if(!defaultResponse.isSuccess()){
-                return new ResponseEntity<>(defaultResponse, HttpStatus.resolve(defaultResponse.getResponseCode()));
-            }else{
-                Transaction transaction = new Transaction();
-                transaction.setTransactionType(TransactionType.DEPOSIT);
-                transaction.setTransactionDate(new Date());
-                transaction.setAccountBalance(account.getBalance()+deposit.getAmount());
-                transaction.setAmount(deposit.getAmount());
-                transaction.setAccountNumber(account.getAccountNumber());
-                transaction.setNarration("Deposit");
-                transaction.setTransactionId(UUID.randomUUID().toString());
-                bankApplicationRepo.insertTransaction(transaction);
-
-                account.setBalance(transaction.getAccountBalance());
-                bankApplicationRepo.updateAccount(account);
-                return new ResponseEntity<>(new DefaultResponse(), HttpStatus.OK);
-            }
+            account.setBalance(transaction.getAccountBalance());
+            bankApplicationRepo.updateAccount(account);
+            return new ResponseEntity<>(new DefaultResponse(), HttpStatus.OK);
         }
     }
 
     @Override
     public ResponseEntity<?> withdraw(@NotNull Withdraw withdraw) {
-        if(withdraw.getWithdrawnAmount()<1.0){
-            return new ResponseEntity<>(new DefaultResponse(400,false,"Amount cannot be less than 1.0 Naira"), HttpStatus.resolve(400));
-        } else {
-            Account account = bankApplicationRepo.getAccountByNumber(withdraw.getAccountNumber());
-            DefaultResponse defaultResponse = bankApplicationUtil.authorize(account,passwordUtil.hashPassword(withdraw.getAccountPassword()));
+        Account account = bankApplicationRepo.getAccountByNumber(withdraw.getAccountNumber());
+        DefaultResponse defaultResponse = bankApplicationUtil.authorize(account,passwordUtil.hashPassword(withdraw.getAccountPassword()));
 
-            if(!defaultResponse.isSuccess()){
-                return new ResponseEntity<>(defaultResponse, HttpStatus.resolve(defaultResponse.getResponseCode()));
+        if(!defaultResponse.isSuccess()){
+            return new ResponseEntity<>(defaultResponse, HttpStatus.resolve(defaultResponse.getResponseCode()));
+        }else{
+            if(bankApplicationUtil.canWithDraw(withdraw,account)){
+                Transaction transaction = new Transaction();
+                transaction.setTransactionType(TransactionType.WITHDRAWAL);
+                transaction.setTransactionDate(new Date());
+                transaction.setAccountBalance(account.getBalance()-withdraw.getWithdrawnAmount());
+                transaction.setAmount(withdraw.getWithdrawnAmount());
+                transaction.setAccountNumber(account.getAccountNumber());
+                transaction.setTransactionId(UUID.randomUUID().toString());
+                transaction.setNarration("Withdrawal");
+                bankApplicationRepo.insertTransaction(transaction);
+
+                account.setBalance(transaction.getAccountBalance());
+                bankApplicationRepo.updateAccount(account);
+
+                return new ResponseEntity<>(new DefaultResponse(), HttpStatus.OK);
             }else{
-                if(bankApplicationUtil.canWithDraw(withdraw,account)){
-                    Transaction transaction = new Transaction();
-                    transaction.setTransactionType(TransactionType.WITHDRAWAL);
-                    transaction.setTransactionDate(new Date());
-                    transaction.setAccountBalance(account.getBalance()-withdraw.getWithdrawnAmount());
-                    transaction.setAmount(withdraw.getWithdrawnAmount());
-                    transaction.setAccountNumber(account.getAccountNumber());
-                    transaction.setTransactionId(UUID.randomUUID().toString());
-                    transaction.setNarration("Withdrawal");
-                    bankApplicationRepo.insertTransaction(transaction);
-
-                    account.setBalance(transaction.getAccountBalance());
-                    bankApplicationRepo.updateAccount(account);
-
-                    return new ResponseEntity<>(new DefaultResponse(), HttpStatus.OK);
-                }else{
-                    return new ResponseEntity<>(new DefaultResponse(400,false,"You need at least 500 Naira to be left in you account after withdrawal"), HttpStatus.resolve(400));
-                }
+                return new ResponseEntity<>(new DefaultResponse(400,false,"You need at least 500 Naira to be left in you account after withdrawal"), HttpStatus.resolve(400));
             }
         }
     }

@@ -1,7 +1,13 @@
 package com.example.bankapplication.model.request;
 
+import org.springframework.validation.annotation.Validated;
+
+import javax.validation.constraints.NotBlank;
+
 public class AccountCreation {
+    @NotBlank(message = "AccountName is mandatory")
     private String accountName;
+    @NotBlank(message = "AccountPassword is mandatory")
     private String accountPassword;
 
     public String getAccountName() {
